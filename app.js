@@ -11,6 +11,8 @@ let tasks = [
     { id: 2, title: 'Task 2', description: 'Lorem Ipsum 2', status: 'Done', order: 2 },
 ];
 
+let nextId = tasks.length + 1
+
 app.listen(PORT, () => {
     console.log('Server is running on port:', PORT);
 });
@@ -32,7 +34,6 @@ function validateTask(req, res, next) {
     }
 
     next();
-      
 }
 
 // GET tasks
@@ -43,7 +44,11 @@ app.get('/tasks', (req, res) => {
 // CREATE task
 app.post('/tasks', validateTask, (req, res) => {
     const task = req.body;
+    task.id = nextId;
+
     tasks.push(task);
+    nextId++;
+
     res.json(task);
 });
 
