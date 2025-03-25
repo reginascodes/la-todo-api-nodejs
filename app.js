@@ -43,6 +43,31 @@ app.delete('/tasks/:id', (req, res) => {
     res.json({ id });
 });
 
+// REORDER tasks
+// Call this endpoint everytime a task is moved
+// Request body contains the task id and the new order
+app.post('/tasks/move', (req, res) => {
+    const { id, order } = req.body;
+
+    // Find the task and get its index
+    const taskIndex = tasks.findIndex(task => task.id == id);
+
+    // Remove the task from the array
+    // Returns array with the removed task
+    const taskToBeMoved = tasks.splice(taskIndex, 1);
+
+    // Insert the task at the new order
+    tasks.splice(order - 1, 0, taskToBeMoved[0]);
+
+    // Reorder the tasks
+    tasks = tasks.map((task, index) => {
+        task.order = index + 1;
+        return task;
+    });
+
+    res.json(tasks);
+});
+
 app.get('/status', (req, res) => {
     const status = {
         status: 'Running'
