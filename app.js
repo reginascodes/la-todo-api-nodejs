@@ -36,6 +36,13 @@ function validateTask(req, res, next) {
     next();
 }
 
+function fixIndexing() {
+    tasks = tasks.map((task, index) => {
+        task.order = index + 1;
+        return task;
+    });
+}
+
 // GET tasks
 app.get('/tasks', (req, res) => {
     res.json(tasks);
@@ -45,6 +52,7 @@ app.get('/tasks', (req, res) => {
 app.post('/tasks', validateTask, (req, res) => {
     const task = req.body;
     task.id = nextId;
+    task.order = tasks.length+1;
 
     tasks.push(task);
     nextId++;
@@ -65,6 +73,7 @@ app.put('/tasks/:id', validateTask, (req, res) => {
 app.delete('/tasks/:id', (req, res) => {
     const id = req.params.id;
     tasks = tasks.filter(task => task.id != id);
+    fixIndexing();
     res.json({ id });
 });
 
@@ -88,10 +97,7 @@ app.post('/tasks/move', (req, res) => {
     tasks.splice(order - 1, 0, taskToBeMoved[0]);
 
     // Reorder the tasks
-    tasks = tasks.map((task, index) => {
-        task.order = index + 1;
-        return task;
-    });
+    fixIndexing();
 
     res.json(tasks);
 });
